@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Mod EVERYTHING better, because reasons!
 // @namespace    http://not.jew.dance/
-// @version      0.10
+// @version      0.11
 // @description  try to take over the world!
 // @author       You
-// @match        https://volafile.io/r/*
+// @match        https://volafile.org/r/*
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
@@ -149,8 +149,8 @@
                     return;
                 }
                 if (file.tags && file.tags.user && rekt.has(file.tags.user.toLowerCase().trim())) {
-                    exts.connection.call("timeoutFile", file.id, file.tags.user);
-                    exts.connection.call("deleteFiles", [file.id]);
+                    exts.connection.callAsyncUi("timeoutFile", file.id, file.tags.user);
+                    exts.connection.callAsyncUi("deleteFiles", [file.id]);
                 }
                 var existing = file.dom.dolosElement;
                 if (existing) {
@@ -176,8 +176,8 @@
             }
         };
 
-        exts.admin.on("owner", function() {
-            if ((!exts.admin.isOwner && !exts.admin.isOwner) || owner) {
+        const on_owner = function() {
+            if ((!exts.user.info.owner && !exts.user.info.janitor) || owner) {
                 return;
             }
             owner = true;
@@ -273,13 +273,15 @@
                     cont.insertBefore(el, cont.firstChild);
                     el.addEventListener("click", function() {
                         let ids = selected();
-                        exts.connection.call("deleteFiles", ids);
+                        exts.connection.callAsyncUi("deleteFiles", ids);
                     });
                 }
                 catch (ex) {
                     console.error(ex);
                 }
             })();
-        });
+        };
+        exts.user.on("info_owner", on_owner);
+        exts.user.on("info_janitor", on_owner);
     }, true);
 })();
